@@ -15,6 +15,10 @@ AFRAME.registerSystem('map-loader', {
             type: 'boolean', // whether or not to use web workers when parsing csv
             default: true
         },
+        wallHeight: {
+            type: 'number',
+            default: 30
+        },
         wallColor: {
             type: 'color',
             default: '#c9daf8'
@@ -131,6 +135,8 @@ AFRAME.registerSystem('map-loader', {
     },
 
     initGeometryFrom: function (chunkData) {
+        var firstColPass = true;
+
         for (const x in chunkData) {
             if(chunkData.hasOwnProperty(x)) {
                 for (const y in chunkData[x]) {
@@ -141,17 +147,15 @@ AFRAME.registerSystem('map-loader', {
                     if(chunkData[x].hasOwnProperty(y)) { // ignore first column
                         const tile = chunkData[x][y];
 
-
-
                         switch (tile.toUpperCase()) {
                             case 'W':
-                                this.initElFrom('walls', x, 15, y, 'box', 10, 30, 10, this.data.wallColor);
+                                this.initElFrom('walls', x, this.data.wallHeight * 0.5, y, 'box', 10, this.data.wallHeight, 10, this.data.wallColor);
                                 this.maxTiles++;
                                 console.log('Tile: ', tile);
                                 break;
                             case 'R':
                                 this.initElFrom('roads', x, 0.1, y, 'plane', 10, 10, null, this.data.roadColor);
-                                this.maxTiles++;
+                                this.maxTiles++;;
                                 console.log('Tile: ', tile);
                                 break;
                             case 'P':
@@ -168,8 +172,13 @@ AFRAME.registerSystem('map-loader', {
                                 break;
                         }
                     }
-                    this.mapDepth++;
+
+                    if (firstColPass) {
+                        this.mapDepth++
+                    }
                 }
+
+                firstColPass = false;
             }
             this.mapWidth++;
         }
@@ -179,10 +188,15 @@ AFRAME.registerSystem('map-loader', {
 
         console.log('Initializing group positions')
 
+        console.log('Map width: ', this.mapWidth);
+        console.log('Map height: ', this.mapDepth);
+
+        const position = (this.data.x - (this.mapWidth * this.data.tileWidth * 0.5)) + ' ' + this.data.y + ' ' + (this.data.z - (this.mapDepth * this.data.tileDepth * 0.5));
+
         for (const g in this.elGroups) {
-            console.log(this.elGroups[g])
+            console.log(this.elGroups[g]);
             if(this.elGroups.hasOwnProperty(g) && this.elGroups[g]) {
-               // this.elGroups[g].setAttribute('position', (this.data.x - (this.mapWidth * this.data.tileWidth)) + ' ' + this.data.y + ' ' + (this.data.z - (this.mapDepth * this.data.tileDepth)));
+               this.elGroups[g].setAttribute('position', position);
                 console.log('Group: ', this.elGroups[g].getAttribute('position'))
             }
         }
