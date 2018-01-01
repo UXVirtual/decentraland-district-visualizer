@@ -53,7 +53,7 @@ AFRAME.registerSystem('map-loader', {
         },
         z: { // Z position of map tile containers
             type: 'number',
-            default: 0
+            default: 5
         }
     },  // System schema. Parses into `this.data`.
 
@@ -100,14 +100,11 @@ AFRAME.registerSystem('map-loader', {
         const el = document.createElement('a-entity');
         el.setAttribute('material', color);
         el.setAttribute('id', name + '-group');
-
-        console.log('TileW', this.data.tileWidth, 'TileH', this.data.tileDepth);
-
         el.addEventListener('child-attached', this.onChildAttached.bind(this));
         this.el.appendChild(el);
         this.elGroups[name] = el;
 
-        console.log('Elgroups: ',this.elGroups)
+        //console.log('Elgroups: ',this.elGroups)
     },
 
     initElFrom: function (group, x, y, z, type, width, height, depth, color) {
@@ -130,7 +127,7 @@ AFRAME.registerSystem('map-loader', {
         const position = (x * this.data.tileWidth) + ' ' + y + ' ' + (z * this.data.tileDepth);
         //console.log('Position: ', position);
         el.setAttribute('position', position);
-        console.log('Inserting type: ',group);
+        //console.log('Inserting type: ',group);
         this.elGroups[group].appendChild(el);
     },
 
@@ -151,23 +148,23 @@ AFRAME.registerSystem('map-loader', {
                             case 'W':
                                 this.initElFrom('walls', x, this.data.wallHeight * 0.5, y, 'box', 10, this.data.wallHeight, 10, this.data.wallColor);
                                 this.maxTiles++;
-                                console.log('Tile: ', tile);
+                                //console.log('Tile: ', tile);
                                 break;
                             case 'R':
                                 this.initElFrom('roads', x, 0.1, y, 'plane', 10, 10, null, this.data.roadColor);
                                 this.maxTiles++;;
-                                console.log('Tile: ', tile);
+                                //console.log('Tile: ', tile);
                                 break;
                             case 'P':
                                 this.initElFrom('paths', x, 0.1, y, 'plane', 10, 10, null, this.data.pathColor);
                                 this.maxTiles++;
-                                console.log('Tile: ', tile);
+                                //console.log('Tile: ', tile);
                                 break;
                             default:
                                 if(parseInt(tile) > 0 && y !== '' && chunkData[x][y] !== '') {
                                     this.initElFrom('districts', x, 0.1, y, 'plane', 10, 10, null, this.data.districtsColor);
                                     this.maxTiles++;
-                                    console.log('Tile: ', tile);
+                                    //console.log('Tile: ', tile);
                                 }
                                 break;
                         }
@@ -197,11 +194,15 @@ AFRAME.registerSystem('map-loader', {
             console.log(this.elGroups[g]);
             if(this.elGroups.hasOwnProperty(g) && this.elGroups[g]) {
                this.elGroups[g].setAttribute('position', position);
-                console.log('Group: ', this.elGroups[g].getAttribute('position'))
+                //console.log('Group: ', this.elGroups[g].getAttribute('position'))
             }
         }
 
         console.log('Initialized group positions')
+    },
+
+    initEnvironment: function () {
+
     },
 
     /* CALLBACK METHODS */
@@ -209,6 +210,7 @@ AFRAME.registerSystem('map-loader', {
     onSceneLoaded: function () {
         this.el.removeEventListener('loaded', this.onSceneLoadedCallback);
         this.loadMap();
+        this.initEnvironment();
     },
 
     onDataLoaded: function (data) {
