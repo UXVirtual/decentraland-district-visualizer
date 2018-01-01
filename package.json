@@ -1,0 +1,27 @@
+{
+  "name": "decentraland-district-visualizer",
+  "version": "1.0.0",
+  "description": "A visualizer for 2D district maps exported from Google Sheets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run serve-http",
+    "serve-http": "node node_modules/.bin/http-server public -p 3000 -o --gzip",
+    "ghpages": "node_modules/.bin/gh-pages -d public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HAZARDU5/decentraland-district-visualizer.git"
+  },
+  "author": "Michael Andrew <michael@uxvirtual.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HAZARDU5/decentraland-district-visualizer/issues"
+  },
+  "homepage": "https://github.com/HAZARDU5/decentraland-district-visualizer#readme",
+  "private": true,
+  "devDependencies": {
+    "gh-pages": "^1.1.0",
+    "http-server": "^0.10.0"
+  }
+}
