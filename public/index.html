@@ -16,8 +16,16 @@
 </head>
 <body>
     <a-scene stats map-loader="csv: assets/csv/map.csv; wallHeight: 10">
-        <a-entity position="22.654 0 16.104" camera="userHeight:1.6" wasd-controls="acceleration: 1000" rotation="-5.042 -682.507 0" look-controls></a-entity>
-        <a-entity position="0 0 0" scale="9.9 9.9 9.9" environment="playArea: 2; preset: tron; shadow: true; shadowSize: 10; flatShading: false; skyType: gradient; horizonColor: #00ccf4; lightPosition: 0 0.5 -0.2; fog: 0.1; ground: noise; groundTexture: checkerboard; groundColor: #030f22; groundColor2: #04142e; grid: 1x1; seed: 1; gridColor: #ee75eb; dressingColor: #ee75eb" environment-ground-texture="repeat: 10.1"></a-entity>
+
+        <a-assets>
+            <a-asset-item id="pyramid-obj" src="assets/obj/BS_concept_001.obj"></a-asset-item>
+            <a-asset-item id="pyramid-mtl" src="assets/obj/BS_concept_001.mtl"></a-asset-item>
+        </a-assets>
+
+        <a-entity position="458.388 0 54.545" camera="userHeight:1.6" wasd-controls="acceleration: 1000" rotation="1.031 -656.036 0" look-controls></a-entity>
+
+        <a-entity id="pyramid" obj-model="mtl:#pyramid-mtl;obj:#pyramid-obj" material="side: double;" position="-125.063 0 30.774" scale="4 4 4"></a-entity>
+        <a-entity position="0 0 0" scale="9.9 9.9 9.9" environment="playArea: 2; preset: tron; shadow: true; shadowSize: 10; flatShading: false; skyType: gradient; horizonColor: #00ccf4; lightPosition: 0 0.5 -0.2; fog: 0.001; ground: noise; groundTexture: checkerboard; groundColor: #030f22; groundColor2: #04142e; grid: 1x1; seed: 1; gridColor: #ee75eb; dressingColor: #ee75eb" environment-ground-texture="repeat: 10.1"></a-entity>
         <a-entity position="0 0 0" star-system="radius: 130; color: #ee75eb; size: 2; count: 1000; texture: assets/img/textures/plus.png"></a-entity>
     </a-scene>
 </body>
