@@ -223,32 +223,26 @@ AFRAME.registerComponent('map-loader', {
 
                         switch (tile.toUpperCase()) {
                             case 'W':
-                                this.initElFrom('walls', x, this.data.wallHeight * 0.5, y, 0, 0, 0, 'box', 10, this.data.wallHeight, 10, this.data.wallColor, 'wall');
+                                this.initElFrom('walls', x, this.data.wallHeight * 0.5, y, 0, 0, 0, 'box', this.data.tileWidth, this.data.wallHeight, this.data.tileDepth, this.data.wallColor, 'wall');
                                 break;
                             case 'R':
-                                this.initElFrom('roads', x, 0.1, y, -90, 0, 0, 'plane', 10, 10, null, this.data.roadColor, 'road');
+                                this.initElFrom('roads', x, 0.1, y, -90, 0, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'road');
                                 break;
                             case 'P':
-                                this.initElFrom('paths', x, 0.1, y, -90, 0, 0, 'plane', 10, 10, null, this.data.pathColor, 'path');
+                                this.initElFrom('paths', x, 0.1, y, -90, 0, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.pathColor, 'path');
                                 break;
                             default:
                                 const deg = tileLabel.slice(3);
 
-                                console.log('Deg: ', deg);
-
-                                console.log('Tile match: ',this.matchMiscTile(tileLabel, 'RAX'));
-
+                                // TODO: Offset ramps in Y direction by half so they line up with other planes
                                 if(this.matchMiscTile(tileLabel, 'RAX')){
-                                    console.log('Ramp tilted along X axis');
-                                    this.initElFrom('roads', x, 0.1, y, deg, 0, 0, 'plane', 10, 10, null, this.data.roadColor, 'ramp');
+                                    this.initElFrom('paths', x, 0.1, y, deg, 0, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
                                 }else if(this.matchMiscTile(tileLabel, 'RAY')){
-                                    console.log('Ramp tilted along Y axis');
-                                    this.initElFrom('roads', x, 0.1, y, deg, -90, 0, 'plane', 10, 10, null, this.data.roadColor, 'ramp');
+                                    this.initElFrom('paths', x, 0.1, y, deg, -90, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
                                 }else if(this.matchMiscTile(tileLabel, 'RAZ')){
-                                    console.log('Ramp tilted along Z axis');
-                                    this.initElFrom('roads', x, 0.1, y, -90, 0, deg, 'plane', 10, 10, null, this.data.roadColor, 'ramp');
+                                    this.initElFrom('paths', x, 0.1, y, -90, 0, deg, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
                                 } else if(this.matchDistrictTile(tile, chunkData, x, y)) {
-                                    this.initElFrom('districts', x, 0.1, y, -90, 0, 0, 'plane', 10, 10, null, this.data.districtsColor, 'district');
+                                    this.initElFrom('districts', x, 0.1, y, -90, 0, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.districtsColor, 'district');
                                 }
                                 break;
                         }
