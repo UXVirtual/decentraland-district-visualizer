@@ -1,4 +1,5 @@
-AFRAME.registerSystem('map-loader', {
+AFRAME.registerComponent('map-loader', {
+    multiple: true,
 
     /* COMPONENT PROPERTIES */
 
@@ -59,19 +60,24 @@ AFRAME.registerSystem('map-loader', {
 
     /* INTERNAL PROPERTIES */
 
-    maxTiles: 0,
-    mapWidth: 0,
-    mapDepth: 0,
-    elGroups: {
-        walls: null,
-        other: null,
-        roads: null,
-        paths: null,
-        districts: null
-    },
     onSceneLoadedCallback: null,
 
     init: function () {
+
+        /* COMPONENT INSTANCE PROPERTIES */
+
+        this.maxTiles = 0;
+        this.mapWidth = 0;
+        this.mapDepth = 0;
+
+        this.elGroups = {
+            walls: null,
+            other: null,
+            roads: null,
+            paths: null,
+            districts: null
+        };
+
         this.onSceneLoadedCallback = this.onSceneLoaded.bind(this);
         this.el.addEventListener('loaded', this.onSceneLoadedCallback);
     },
@@ -99,8 +105,13 @@ AFRAME.registerSystem('map-loader', {
                     this.elGroups[group].setAttribute('geometry-merger', 'preserveOriginal: false');
                     console.log('Merged geometry for: ',group);
                     this.elGroups[group].setAttribute('material', {
-                        color: this.data[group + 'Color']
+                        color: this.data[group + 'Color'],
+                        side: 'double'
                     });
+                    /*this.elGroups[group].setAttribute('shadows', {
+                        recieve: true,
+                        cast: true
+                    });*/
                 }.bind(this),0);
             }
         }
@@ -117,6 +128,16 @@ AFRAME.registerSystem('map-loader', {
         return total-1;
     },
 
+    matchMiscTile: function (tileLabel, match) {
+        const tileLabelSlice = tileLabel.slice(0,3);
+        return (match) ? (tileLabelSlice === match) : ((tileLabelSlice === 'RAX') ||
+            (tileLabelSlice === 'RAY') || (tileLabelSlice === 'RAZ'));
+    },
+
+    matchDistrictTile: function (tile, chunkData, x, y) {
+        return (parseInt(tile) > 0 && y !== '' && chunkData[x][y] !== '');
+    },
+
     getMaxTiles: function (chunkData) {
         var maxTiles = 0;
 
@@ -125,6 +146,7 @@ AFRAME.registerSystem('map-loader', {
                 for (const y in chunkData[x]) {
                     if(chunkData[x].hasOwnProperty(y)) { // ignore first column
                         const tile = chunkData[x][y];
+                        const tileLabel = tile.toUpperCase();
 
                         switch (tile.toUpperCase()) {
                             case 'W':
@@ -133,7 +155,7 @@ AFRAME.registerSystem('map-loader', {
                                 maxTiles++;
                                 break;
                             default:
-                                if(parseInt(tile) > 0 && y !== '' && chunkData[x][y] !== '') {
+                                if(this.matchMiscTile(tileLabel.slice(0,3)) || this.matchDistrictTile(tile, chunkData, x, y)) {
                                     maxTiles++;
                                 }
                                 break;
@@ -154,15 +176,14 @@ AFRAME.registerSystem('map-loader', {
 
     initElGroup: function (name, color) {
         const el = document.createElement('a-entity');
-        el.setAttribute('material', color);
         el.setAttribute('shadow', { receive: true });
-        el.setAttribute('id', name + '-group');
+        el.setAttribute('class', name + '-group');
         el.addEventListener('child-attached', this.onChildAttached.bind(this));
         this.el.appendChild(el);
         this.elGroups[name] = el;
     },
 
-    initElFrom: function (group, x, y, z, type, width, height, depth, color) {
+    initElFrom: function (group, x, y, z, rotX, rotY, rotZ, type, width, height, depth, color, className) {
         const el = document.createElement('a-'+type);
         var geometry = {
             width: width,
@@ -170,16 +191,20 @@ AFRAME.registerSystem('map-loader', {
             buffer: false
         };
 
+        el.setAttribute('material', {
+            color: color,
+            side: 'double'
+        });
+
         if (type === 'plane') {
-            el.setAttribute('rotation', '-90 0 0');
+            el.setAttribute('rotation', rotX + ' ' + rotY + ' ' + rotZ);
         } else {
             geometry.depth = depth;
         }
 
         el.setAttribute('geometry', geometry);
-        el.setAttribute('material', {
-            color: color
-        });
+        el.classList.add(className);
+
         const position = (x * this.data.tileWidth) + ' ' + y + ' ' + (z * this.data.tileDepth);
         el.setAttribute('position', position);
         this.elGroups[group].appendChild(el);
@@ -194,19 +219,36 @@ AFRAME.registerSystem('map-loader', {
                     if(chunkData[x].hasOwnProperty(y)) { // ignore first column as it contains grid coords
                         const tile = chunkData[x][y];
 
+                        const tileLabel = tile.toUpperCase();
+
                         switch (tile.toUpperCase()) {
                             case 'W':
-                                this.initElFrom('walls', x, this.data.wallHeight * 0.5, y, 'box', 10, this.data.wallHeight, 10, this.data.wallColor);
+                                this.initElFrom('walls', x, this.data.wallHeight * 0.5, y, 0, 0, 0, 'box', 10, this.data.wallHeight, 10, this.data.wallColor, 'wall');
                                 break;
                             case 'R':
-                                this.initElFrom('roads', x, 0.1, y, 'plane', 10, 10, null, this.data.roadColor);
+                                this.initElFrom('roads', x, 0.1, y, -90, 0, 0, 'plane', 10, 10, null, this.data.roadColor, 'road');
                                 break;
                             case 'P':
-                                this.initElFrom('paths', x, 0.1, y, 'plane', 10, 10, null, this.data.pathColor);
+                                this.initElFrom('paths', x, 0.1, y, -90, 0, 0, 'plane', 10, 10, null, this.data.pathColor, 'path');
                                 break;
                             default:
-                                if(parseInt(tile) > 0 && y !== '' && chunkData[x][y] !== '') {
-                                    this.initElFrom('districts', x, 0.1, y, 'plane', 10, 10, null, this.data.districtsColor);
+                                const deg = tileLabel.slice(3);
+
+                                console.log('Deg: ', deg);
+
+                                console.log('Tile match: ',this.matchMiscTile(tileLabel, 'RAX'));
+
+                                if(this.matchMiscTile(tileLabel, 'RAX')){
+                                    console.log('Ramp tilted along X axis');
+                                    this.initElFrom('roads', x, 0.1, y, deg, 0, 0, 'plane', 10, 10, null, this.data.roadColor, 'ramp');
+                                }else if(this.matchMiscTile(tileLabel, 'RAY')){
+                                    console.log('Ramp tilted along Y axis');
+                                    this.initElFrom('roads', x, 0.1, y, deg, -90, 0, 'plane', 10, 10, null, this.data.roadColor, 'ramp');
+                                }else if(this.matchMiscTile(tileLabel, 'RAZ')){
+                                    console.log('Ramp tilted along Z axis');
+                                    this.initElFrom('roads', x, 0.1, y, -90, 0, deg, 'plane', 10, 10, null, this.data.roadColor, 'ramp');
+                                } else if(this.matchDistrictTile(tile, chunkData, x, y)) {
+                                    this.initElFrom('districts', x, 0.1, y, -90, 0, 0, 'plane', 10, 10, null, this.data.districtsColor, 'district');
                                 }
                                 break;
                         }
