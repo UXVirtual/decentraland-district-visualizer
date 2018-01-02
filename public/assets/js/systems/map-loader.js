@@ -55,6 +55,10 @@ AFRAME.registerComponent('map-loader', {
         z: { // Z position of map tile containers
             type: 'number',
             default: 5
+        },
+        mergeAllGeometry: { // whether or not to merge all geometry
+            type: 'boolean',
+            default: true
         }
     },  // System schema. Parses into `this.data`.
 
@@ -232,17 +236,22 @@ AFRAME.registerComponent('map-loader', {
                                 this.initElFrom('paths', x, 0.1, y, -90, 0, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.pathColor, 'path');
                                 break;
                             default:
-                                const deg = tileLabel.slice(3);
-
-                                // TODO: Offset ramps in Y direction by half so they line up with other planes
-                                if(this.matchMiscTile(tileLabel, 'RAX')){
-                                    this.initElFrom('paths', x, 0.1, y, deg, 0, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
-                                }else if(this.matchMiscTile(tileLabel, 'RAY')){
-                                    this.initElFrom('paths', x, 0.1, y, deg, -90, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
-                                }else if(this.matchMiscTile(tileLabel, 'RAZ')){
-                                    this.initElFrom('paths', x, 0.1, y, -90, 0, deg, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
-                                } else if(this.matchDistrictTile(tile, chunkData, x, y)) {
+                                if(this.matchDistrictTile(tile, chunkData, x, y)) {
                                     this.initElFrom('districts', x, 0.1, y, -90, 0, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.districtsColor, 'district');
+                                } else {
+                                    const deg = tileLabel.slice(3);
+                                    const directionModifier = (parseInt(deg) > 0) ? 1 : -1;
+
+                                    console.log('Direction modifier: ',directionModifier, tileLabel)
+
+                                    // TODO: Offset ramps in Y direction by half so they line up with other planes
+                                    if(this.matchMiscTile(tileLabel, 'RAX')){
+                                        this.initElFrom('paths', x, -3.5, y - 0.15, deg, 0, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
+                                    }else if(this.matchMiscTile(tileLabel, 'RAY')){
+                                        this.initElFrom('paths', x - 0.15 * directionModifier, -3.5, y, deg, -90, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
+                                    }else if(this.matchMiscTile(tileLabel, 'RAZ')){
+                                        this.initElFrom('paths', x, -3.5, y, -90, 0, deg, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
+                                    }
                                 }
                                 break;
                         }
@@ -327,7 +336,7 @@ AFRAME.registerComponent('map-loader', {
 
         console.log('Child attached: ' + totalChildren + ' / ' + (this.maxTiles - 1));
 
-        if(totalChildren === this.maxTiles - 1) {
+        if(totalChildren === this.maxTiles - 1 && this.data.mergeAllGeometry) {
             console.log('All tiles loaded');
             this.mergeAllGroupGeometry();
         }
