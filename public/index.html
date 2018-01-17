@@ -10,14 +10,15 @@
     <script src="https://cdn.rawgit.com/matthewbryancurtis/aframe-star-system-component/db4f1030/index.js"></script>
     <script src="https://cdn.rawgit.com/feiss/aframe-environment-component/master/dist/aframe-environment-component.min.js"></script>
     <script src="https://unpkg.com/aframe-geometry-merger-component/dist/aframe-geometry-merger-component.min.js"></script>
-    <script src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
+    <script src="https://cdn.rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
     <script src="https://unpkg.com/super-hands@2.1.0/dist/super-hands.min.js"></script>
     <script src="https://unpkg.com/aframe-input-mapping-component/dist/aframe-input-mapping-component.min.js"></script>
+
     <script src="assets/js/bower_components/papaparse/papaparse.js"></script>
 
     <link rel="stylesheet" href="assets/css/style.css" />
     <script src="assets/js/systems/map-loader.js?v=1.0.10"></script>
-    <script src="assets/js/systems/main.js"></script>
+    <script src="assets/js/systems/main.js?v=1.0.1"></script>
 </head>
 <body>
     <a-scene main stats>
@@ -29,10 +30,11 @@
 
         <a-camera wasd-controls="acceleration: 1000" look-controls></a-camera>
 
-        <a-entity id="level1" map-loader="csv: assets/csv/test.csv; wallHeight: 10"></a-entity>
-        <a-entity id="level2" map-loader="csv: assets/csv/test2.csv; wallHeight: 10; y: 20"></a-entity>
+        <a-entity id="level1" map-loader="mergeAllGeometry: true; csv: assets/csv/map1.csv; wallHeight: 30"></a-entity>
+        <!--<a-entity id="level2" map-loader="mergeAllGeometry: true; csv: assets/csv/map2.csv; wallHeight: 10; y: 20"></a-entity>-->
 
-        <!--<a-entity id="pyramid" obj-model="mtl:#pyramid-mtl;obj:#pyramid-obj" material="side: double;" position="-125.063 0 30.774" scale="4 4 4"></a-entity>-->
+
+        <a-entity id="pyramid" obj-model="mtl:#pyramid-mtl;obj:#pyramid-obj" material="side: double;" position="-125.063 0 30" scale="4 4 4"></a-entity>
         <a-entity position="0 0 0" scale="9.9 9.9 9.9" environment="playArea: 2; preset: tron; shadow: true; shadowSize: 10; flatShading: false; skyType: gradient; horizonColor: #00ccf4; lightPosition: 0 0.5 -0.2; fog: 0.001; ground: noise; groundTexture: checkerboard; groundColor: #030f22; groundColor2: #04142e; grid: 1x1; seed: 1; gridColor: #ee75eb; dressingColor: #ee75eb" environment-ground-texture="repeat: 10.1"></a-entity>
         <a-entity position="0 0 0" star-system="radius: 130; color: #ee75eb; size: 2; count: 1000; texture: assets/img/textures/plus.png"></a-entity>
     </a-scene>

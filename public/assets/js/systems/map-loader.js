@@ -246,6 +246,7 @@ AFRAME.registerComponent('map-loader', {
 
                                     // TODO: Offset ramps in Y direction by half so they line up with other planes
                                     if(this.matchMiscTile(tileLabel, 'RAX')){
+                                        // TODO: get RAX with correct Z offset
                                         this.initElFrom('paths', x, -3.5, y - 0.15, deg, 0, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');
                                     }else if(this.matchMiscTile(tileLabel, 'RAY')){
                                         this.initElFrom('paths', x - 0.15 * directionModifier, -3.5, y, deg, -90, 0, 'plane', this.data.tileWidth, this.data.tileDepth, null, this.data.roadColor, 'ramp');

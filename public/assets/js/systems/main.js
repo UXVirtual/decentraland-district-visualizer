@@ -26,19 +26,19 @@ AFRAME.registerSystem('main', {
 
         */
 
-        this.el.addEventListener('loaded', function() {
+        /*this.el.addEventListener('loaded', function() {
             const lightEls = document.querySelectorAll('[light]');
             for (const light in lightEls) {
                 if(lightEls.hasOwnProperty(light)){
                     if (lightEls[light].getAttribute('light')['type'] !== 'hemisphere') {
                         lightEls[light].setAttribute('light',{
-                            shadowCameraVisible: true,
-                            castShadow: true
+                            shadowCameraVisible: false,
+                            castShadow: false
                         });
                     }
                 }
             }
-        });
+        });*/
     }
 });
 
