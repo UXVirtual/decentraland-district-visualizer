@@ -5,7 +5,7 @@ A visualizer for 2D district maps exported from Google Sheets
 
 ## DEMO
 
-[View demo here](https://hazardu5.github.io/decentraland-district-visualizer/)
+[View demo here](https://uxvirtual.github.io/decentraland-district-visualizer/)
 
 ## Installation
 
